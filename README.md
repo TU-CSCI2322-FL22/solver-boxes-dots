@@ -1,4 +1,5 @@
-Garet Sholet
-Melina Tierrablanca Vasquez
-David Mendiola
-Tristan Rajapakse
+Boxes + Dots
+Garrett Chollett
+Melina Tierrablanca-Vasquez
+Matt Mendiola
+Tristan Rap
