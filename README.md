@@ -1,5 +1,2 @@
 Boxes + Dots
-Garrett Chollett
-Melina Tierrablanca Vasquez
-David Mendiola
-Tristan Rap
+Garet Sholet, Melina Tierrablanca Vasquez, David Mendiola, Tristan Rap
