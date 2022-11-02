@@ -1,5 +1,5 @@
 Boxes + Dots
 Garrett Chollett
-Melina Tierrablanca Vasquez
+Melina Tierrablanca-Vasquez
 Matt Mendiola
 Tristan Rap
