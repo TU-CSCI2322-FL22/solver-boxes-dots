@@ -1,2 +1,2 @@
 Boxes + Dots
-Garrett Chollett, Melina Tierrablanca-Vasquez, Matthew Mendiola, Tristan Rajapakse
+Garet Sholet, Melina Tierrablanca Vasquez, David Mendiola, Tristan Rap
