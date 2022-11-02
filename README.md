@@ -1,5 +1,5 @@
 Boxes + Dots
-Garet Sholet
+Garrett Chollett
 Melina Tierrablanca Vasquez
 David Mendiola
 Tristan Rap
