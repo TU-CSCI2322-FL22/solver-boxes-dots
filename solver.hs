@@ -10,11 +10,19 @@ data Direction = Down | Left
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
 -- Represents a box with the point in the top left corner and the player who made it
-type Box = (Point,Player) 
--- Represents what turn it is
-type Turn = Int 
+type Box = (Point,Player)
 -- Represents the move of a player
 type Move = (Line,Player)
 -- Represents the game state as 
 -- include the boxes that have been made, the lines, what turn it is, and whose turn it is
-type Board = ([Box],[Line],Turn,Player) 
+type Board = ([Box],[Line],Int,Player) 
+
+makeBoard :: Int -> Board
+makeBoard = undefined
+
+makeMove :: Point -> Point -> Board -> Maybe Line
+makeMove = undefined
+
+updateBoard :: Board -> Line -> Board
+
+
