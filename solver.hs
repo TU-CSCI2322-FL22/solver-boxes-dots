@@ -17,7 +17,7 @@ type Box = (Point,Player)
 type Move = (Line,Player)
 -- Represents the game state as 
 -- include the boxes that have been made, the lines, what turn it is, and whose turn it is
-type Board = ([Point],[Box],[Line],Int,Player) 
+type Board = ([Point],[Box],[Line],Int,Player)
 -------------------------------------------------------------------------------------------------
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
@@ -45,21 +45,21 @@ makeBoard = undefined
 isMoveLegal :: Point -> Point -> Board -> Boolean
 isMoveLegal = undefined
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
-makeMove :: Point -> Point -> Board -> Maybe Line
+makeMove :: Point -> Point -> Board -> Maybe Move
 makeMove = undefined
 -- takes in a line and adds it to the board
 -- checks if the line can form a new box using "canMakeBox"
 -- if it can, it makes a box and adds it to the list as well
 -- it changes the player if a box wasn't made and keeps the player the same if not
-updateBoard :: Board -> Line -> Board
+updateBoard :: Board -> Move -> Board
 updateBoard = undefined
 -- checks if someone has won the game or tied and if neither has happened then it will return nothing
 -- meaning the game must still go on
 checkWin :: Board -> Maybe Win
-winnerCheck = undefined
+checkWin = undefined
 -- checks if a box can be made out of the given list of lines
-canMakeBox :: [Line] -> Boolean
+canMakeBox :: Move -> Board -> Maybe Point
 canMakeBox = undefined
 -- makes a box out of the given lines and the player that made it
-makeBox :: [Line] -> Player -> Box
+makeBox :: Move -> Board -> Maybe Box
 makeBox = undefined
