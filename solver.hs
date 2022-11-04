@@ -2,13 +2,13 @@
 --                              DATA TYPES FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
 -- Represents the players of the game devided into the colors red and blue
-data Player = Red | Blue
+data Player = Red | Blue deriving (Show,Eq)
 -- Describes the winner or a tie
-data Win = Winner Player | Tie
+data Win = Winner Player | Tie deriving Show
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
-data Direction = Down | Left
+data Direction = Down | Left deriving (Show, Eq)
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
 -- Represents a box with the point in the top left corner and the player who made it
@@ -48,10 +48,9 @@ makeBoard :: Int -> Board
 makeBoard = undefined
 -- checks if the move is legal, aka all points are on the board, checks if the points are one apart
 -- in one of the allowed directions, and lastly checks if the line is already on the board
-isMoveLegal :: Point -> Point -> Board -> Boolean
-isMoveLegal = undefined
+legalMoves :: 
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
-makeMove :: Point -> Point -> Board -> Maybe Move
+makeMove :: Point -> Point -> Maybe Move
 makeMove = undefined
 -- takes in a line and adds it to the board
 -- checks if the line can form a new box using "canMakeBox"
