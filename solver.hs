@@ -2,13 +2,13 @@
 --                              DATA TYPES FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
 -- Represents the players of the game devided into the colors red and blue
-data Player = Red | Blue
+data Player = Red | Blue deriving (Show,Eq)
 -- Describes the winner or a tie
-data Win = Winner Player | Tie
+data Win = Winner Player | Tie deriving Show
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
-data Direction = Down | Left
+data Direction = Down | Left deriving (Show, Eq)
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
 -- Represents a box with the point in the top left corner and the player who made it
