@@ -42,10 +42,9 @@ makeBoard :: Int -> Board
 makeBoard = undefined
 -- checks if the move is legal, aka all points are on the board, checks if the points are one apart
 -- in one of the allowed directions, and lastly checks if the line is already on the board
-isMoveLegal :: Point -> Point -> Board -> Boolean
-isMoveLegal = undefined
+legalMoves :: 
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
-makeMove :: Point -> Point -> Board -> Maybe Move
+makeMove :: Point -> Point -> Maybe Move
 makeMove = undefined
 -- takes in a line and adds it to the board
 -- checks if the line can form a new box using "canMakeBox"
