@@ -55,7 +55,7 @@ updateBoard :: Board -> Line -> Board
 updateBoard = undefined
 -- checks if someone has won the game or tied and if neither has happened then it will return nothing
 -- meaning the game must still go on
-winnerCheck :: Board -> Maybe Win
+checkWin :: Board -> Maybe Win
 winnerCheck = undefined
 -- checks if a box can be made out of the given list of lines
 canMakeBox :: [Line] -> Boolean
