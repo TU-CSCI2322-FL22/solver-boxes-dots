@@ -51,9 +51,12 @@ makeMove = undefined
 -- it changes the player if a box wasn't made and keeps the player the same if not
 updateBoard :: Board -> Line -> Board
 updateBoard = undefined
--- checks if someone one the game, will return nothing if noone has one yet
-winnerCheck :: Board -> Maybe Player
+-- checks if the game has been won or not by using the length of the list of lines
+winnerCheck :: Board -> Boolean
 winnerCheck = undefined
+-- gets the winner if there is one and returns nothing if tied using the list of boxes
+getWinner :: Board -> Maybe Player
+getWinner = undefined
 -- checks if a box can be made out of the given list of lines
 canMakeBox :: [Line] -> Boolean
 canMakeBox = undefined
