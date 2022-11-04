@@ -3,6 +3,8 @@
 -------------------------------------------------------------------------------------------------
 -- Represents the players of the game devided into the colors red and blue
 data Player = Red | Blue
+-- Describes the winner or a tie
+data Win = Winner Player | Tie
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
@@ -51,12 +53,10 @@ makeMove = undefined
 -- it changes the player if a box wasn't made and keeps the player the same if not
 updateBoard :: Board -> Line -> Board
 updateBoard = undefined
--- checks if the game has been won or not by using the length of the list of lines
-winnerCheck :: Board -> Boolean
+-- checks if someone has won the game or tied and if neither has happened then it will return nothing
+-- meaning the game must still go on
+winnerCheck :: Board -> Maybe Win
 winnerCheck = undefined
--- gets the winner if there is one and returns nothing if tied using the list of boxes
-getWinner :: Board -> Maybe Player
-getWinner = undefined
 -- checks if a box can be made out of the given list of lines
 canMakeBox :: [Line] -> Boolean
 canMakeBox = undefined
