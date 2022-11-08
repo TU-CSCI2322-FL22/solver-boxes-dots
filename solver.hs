@@ -78,15 +78,15 @@ updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player) = c
 -- meaning the game must still go on
 checkWin :: Board -> Maybe Win
 checkWin (boxes, _, _, size, player) 
-    | isDone && redBoxes < halfBoxes = Win Blue
-    | isDone && redBoxes > halfBoxes = Win Red
-    | isDone                         = Tie
+    | isDone && redBoxes < halfBoxes = Just (Winner Blue)
+    | isDone && redBoxes > halfBoxes = Just (Winner Red)
+    | isDone                         = Just (Tie)
     | otherwise                      = Nothing
-        where halfBoxes = numBoxes / 2
+        where halfBoxes = numBoxes `div` 2 --(fromIntegral numBoxes) / (fromIntegral 2)
               isDone = length boxes == numBoxes
               numBoxes = (size - 1) ** 2
-              redBoxes = foldr (\(_,player) acc if player == Red then 1 + acc else acc) 0 boxes
-
+              --redBoxes = foldr (\(_,player) acc if player == Red then 1 + acc else acc) 0 boxes
+              redBoxes = length (filter (\x -> snd x == Red) boxes)
 
 Just gameState = makeBoard 3
 Just move = makeMove (1,1) (1,2) gameState
