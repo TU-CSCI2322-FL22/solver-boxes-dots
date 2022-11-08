@@ -35,8 +35,10 @@ prettyShowBoard (boxes,lines, legals, _, player)= undefined
 
 -- constructs the starting board by taking an int which represents the sqrt of the number of dots
 -- inputing 3 would make a 3x3 board
-makeBoard :: Int -> Board
-makeBoard size = ([], [], legalMoves size, size, Red)
+makeBoard :: Int -> Maybe Board
+makeBoard size 
+| size > 2 = Just ([], [], legalMoves size, size, Red)
+| otherwise = Nothing
 
 -- creates a list of all the legal moves that can be made with the given board
 legalMoves :: Int -> [Line]
@@ -86,5 +88,5 @@ checkWin (boxes, _, _, size, player)
               redBoxes = foldr (\(_,player) acc if player == Red then 1 + acc else acc) 0 boxes
 
 
-gameState = makeBoard 3
+Just gameState = makeBoard 3
 Just move = makeMove (1,1) (1,2) gameState
