@@ -36,6 +36,7 @@ instance Show Player where
 -}
 
 prettyShowBoard :: Board -> String
+prettyShowBoard = undefined
 
 
 
