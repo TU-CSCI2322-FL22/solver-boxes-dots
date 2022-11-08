@@ -17,11 +17,11 @@ type Box = (Point,Player)
 type Move = (Line,Player)
 -- Represents the game state as 
 -- include the boxes that have been made, the lines, what turn it is, and whose turn it is
-type Board = ([Point],[Box],[Line],Int,Player)
+type Board = ([Box],[Line],Int,Player)
 -------------------------------------------------------------------------------------------------
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
-instance Show Board where
+{-instance Show Board where
     show board = undefined
 
 instance Show Line where
@@ -33,6 +33,12 @@ instance Show Box where
 instance Show Player where
     show Red = "red"
     show Blue = "blue"
+-}
+
+prettyShowBoard :: Board -> String
+
+
+
 -------------------------------------------------------------------------------------------------
 --                             FUNCTIONS FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
@@ -51,15 +57,16 @@ makeMove = undefined
 -- checks if the line can form a new box using "canMakeBox"
 -- if it can, it makes a box and adds it to the list as well
 -- it changes the player if a box wasn't made and keeps the player the same if not
-updateBoard :: Board -> Move -> Board
+updateBoard :: Board -> Move -> Maybe Board
 updateBoard = undefined
 -- checks if someone has won the game or tied and if neither has happened then it will return nothing
 -- meaning the game must still go on
 checkWin :: Board -> Maybe Win
 checkWin = undefined
 -- checks if a box can be made out of the given list of lines
-canMakeBox :: Move -> Board -> Maybe Point
-canMakeBox = undefined
+
 -- makes a box out of the given lines and the player that made it
 makeBox :: Move -> Board -> Maybe Box
 makeBox = undefined
+    --canMakeBox :: Move -> Board -> Maybe Point
+    --canMakeBox = undefined
