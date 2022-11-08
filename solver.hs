@@ -1,3 +1,4 @@
+import Data.List
 -------------------------------------------------------------------------------------------------
 --                              DATA TYPES FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
@@ -12,7 +13,7 @@ type Point = (Int,Int)
 data Direction = Rght | Dwn deriving (Show, Eq)
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
--- Represents a box with the point in the top left corner and the player who made it
+-- Represents a box with the point in the top left  corner and the player who made it
 type Box = (Point,Player)
 -- Represents the move of a player
 type Move = (Line,Player)
@@ -26,7 +27,7 @@ type Board = ([Box], [Line], LegalMoves, Int, Player)
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
 prettyShowBoard :: Board -> String
-prettyShowBoard = undefined
+prettyShowBoard (boxes,lines, legals, _, player)= undefined
 
 -------------------------------------------------------------------------------------------------
 --                             FUNCTIONS FOR DOTS AND BOXES
@@ -48,29 +49,42 @@ legalMoves size = legalMovesHelper 1 1
 
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
 makeMove :: Point -> Point -> Board -> Maybe Move
-makeMove (row1,col1) (row2,col2) (boxes, lines, legals, size, player)
+makeMove (row1,col1) (row2,col2) (_, lines, legals, _, player)
     | (abs (row1-row2) == 1 && col1 == col2) = makeMoveHelper (((min row1 row2), col1), Dwn)
     | (abs (col1-col2) == 1 && row1 == row2) = makeMoveHelper ((row1, (min col1 col2)), Rght)
     | otherwise = Nothing
         where makeMoveHelper line 
-                | line `elem` lines = Nothing
-                | otherwise = Just (line, player)
+                | line `elem` legals = Just (line, player) 
+                | otherwise = Nothing
 
 -- makes a box out of the given lines and the player that made it
 makeBox :: Move -> Board -> Maybe Box
-makeBox = undefined
+makeBox (line, player) (boxes, lines, _, _, _) = undefined
 
 -- takes in a line and adds it to the board
 -- checks if the line can form a new box using "canMakeBox"
 -- if it can, it makes a box and adds it to the list as well
 -- it changes the player if a box wasn't made and keeps the player the same if not
-updateBoard :: Board -> Move -> Maybe Board
-updateBoard = undefined
+updateBoard :: Board -> Move -> Board
+updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player) = case makeBox move board of
+    Just x -> (x:boxes, line:lines, (delete line legals), size, player)
+    Nothing -> (boxes, line:lines, (delete line legals), size, (negPlayer player))
+        where negPlayer Red = Blue
+              negPlayer Blue = Red
 
 -- checks if someone has won the game or tied and if neither has happened then it will return nothing
 -- meaning the game must still go on
 checkWin :: Board -> Maybe Win
-checkWin = undefined
+checkWin (boxes, _, _, size, player) 
+    | isDone && redBoxes < halfBoxes = Win Blue
+    | isDone && redBoxes > halfBoxes = Win Red
+    | isDone                         = Tie
+    | otherwise                      = Nothing
+        where halfBoxes = numBoxes / 2
+              isDone = length boxes == numBoxes
+              numBoxes = (size - 1) ** 2
+              redBoxes = foldr (\(_,player) acc if player == Red then 1 + acc else acc) 0 boxes
 
 
 gameState = makeBoard 3
+Just move = makeMove (1,1) (1,2) gameState
