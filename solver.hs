@@ -42,7 +42,8 @@ makeBoard :: Int -> Board
 makeBoard = undefined
 -- checks if the move is legal, aka all points are on the board, checks if the points are one apart
 -- in one of the allowed directions, and lastly checks if the line is already on the board
-legalMoves :: 
+legalMoves :: Board -> [Line]
+legalMoves = undefined
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
 makeMove :: Point -> Point -> Maybe Move
 makeMove = undefined
