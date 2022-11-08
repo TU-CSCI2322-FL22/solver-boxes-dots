@@ -50,3 +50,5 @@ checkWin = undefined
 -- makes a box out of the given lines and the player that made it
 makeBox :: Move -> Board -> Maybe Box
 makeBox = undefined
+
+gameState = makeBoard 3
