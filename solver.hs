@@ -27,7 +27,7 @@ type Board = ([Box], [Line], LegalMoves, Int, Player)
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
 prettyShowBoard :: Board -> String
-prettyShowBoard (boxes,lines, legals, _, player)= undefined
+prettyShowBoard (boxes,lines, legals, _, player) = undefined
 
 -------------------------------------------------------------------------------------------------
 --                             FUNCTIONS FOR DOTS AND BOXES
