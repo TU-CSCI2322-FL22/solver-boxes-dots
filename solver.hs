@@ -94,7 +94,6 @@ checkWin (boxes, _, _, size, player)
               isDone = length boxes == numBoxes
               numBoxes = (size - 1)^2
               redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
-            --   redBoxes = length (filter (\x -> snd x == Red) boxes)
 
 Just gameState = makeBoard 3
 Just move = makeMove (1,1) (1,2) gameState
