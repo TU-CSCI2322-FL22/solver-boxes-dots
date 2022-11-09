@@ -26,9 +26,6 @@ type Board = ([Box], [Line], LegalMoves, Int, Player)
 -------------------------------------------------------------------------------------------------
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
-pSP :: Player -> String
-pSP Red = "Rd"
-pSP Blue = "Bl"
 
 prettyShowBoard :: Board -> String
 prettyShowBoard board@(boxes, lines, legals, size, player) = case checkWin board of
@@ -44,7 +41,8 @@ prettyShowBoard board@(boxes, lines, legals, size, player) = case checkWin board
             | otherwise = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ "       ") else show p ++ "\n" ++ acc ++ "\n" ++ prettyBoardSwag ps []
                 where plyr = if (p,Blue) `elem` boxes then "Bl" else if (p,Red) `elem` boxes then "Rd" else "  "
 
-pSBIO board = putStr $ prettyShowBoard board
+showGame :: Board -> IO ()
+showGame board = putStr $ prettyShowBoard board
 -- (1,1)--(1,2)--(1,3)
 --   |  Rd  |      |
 -- (2,1)--(2,2)--(2,3)
@@ -126,4 +124,5 @@ boardWithBox = ([((1,1), Blue)],[((1,1),Dwn),((1,1),Rght),((1,2),Dwn),((2,1),Rgh
 wholeBoard3 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red)], (legalMoves 3), [], 3, Blue)
 wholeBoard4 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red),((1,3),Red),((2,3),Blue),((3,1),Blue),((3,2),Red),((3,3),Blue)], (legalMoves 4), [], 4, Blue)
 testBoard = updateBoard boardWithBox (((1,3),Dwn),Blue)
-printTest = pSBIO testBoard
+printWholeBoard3 = showGame wholeBoard3
+printTest = showGame testBoard
