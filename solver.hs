@@ -26,8 +26,27 @@ type Board = ([Box], [Line], LegalMoves, Int, Player)
 -------------------------------------------------------------------------------------------------
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
+pSP :: Player -> String
+pSP Red = "Rd"
+pSP Blue = "Bl"
+
 prettyShowBoard :: Board -> String
-prettyShowBoard (boxes,lines, legals, _, player) = undefined
+prettyShowBoard (boxes, lines, legals, size, player) = do
+    ("Current Player: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+    where points = [(x,y) | x <- [1..size], y <- [1..size]]
+          prettyBoardSwag [] acc = []
+          prettyBoardSwag (p:ps) acc
+            | (p,Rght) `elem` lines && (p,Dwn) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (("  |  " ++ plyr) ++ acc)
+            | (p,Rght) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ "       ")
+            | (p,Dwn) `elem` lines = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ ("  |    ")) else show p ++ "  \n" ++ acc ++ "|/n" ++ prettyBoardSwag ps []
+            | otherwise = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ "     ") else show p ++ "  \n" ++ acc ++ "\n" ++ prettyBoardSwag ps []
+                where plyr = if (p,Blue) `elem` boxes then "Bl" else if (p,Red) `elem` boxes then "Rd" else ""
+
+-- (1,1)--(1,2)--(1,3)
+--   |  Rd  |  Bl  |
+-- (2,1)--(2,2)--(2,3)
+--   |  Rd  |            
+-- (3,1)--(3,2)  (3,3)
 
 -------------------------------------------------------------------------------------------------
 --                             FUNCTIONS FOR DOTS AND BOXES
@@ -96,5 +115,13 @@ checkWin (boxes, _, _, size, player)
               redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
             --   redBoxes = length (filter (\x -> snd x == Red) boxes)
 
-Just gameState = makeBoard 3
-Just move = makeMove (1,1) (1,2) gameState
+Just startBoard = makeBoard 3
+startPrint = putStr (prettyShowBoard startBoard)
+Just moveRight = makeMove (1,1) (1,2) startBoard
+Just moveDown = makeMove (1,1) (2,1) startBoard
+boardWithBox = ([((1,1), Blue)],[((1,1),Dwn),((1,1),Rght),((1,2),Dwn),((2,1),Rght)],[((1,2),Rght), ((1,3),Dwn),((2,1),Dwn),((2,2),Dwn),((2,2),Rght),((2,3),Dwn),((3,1),Rght),((3,2),Rght)],3,Blue)
+newBoardDown = updateBoard startBoard moveDown
+newBoardRight = updateBoard startBoard moveRight
+newPrintRight = putStr (prettyShowBoard newBoardRight)
+newPrintDown = putStr (prettyShowBoard newBoardDown)
+printBox = putStr (prettyShowBoard boardWithBox)
