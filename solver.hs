@@ -31,8 +31,9 @@ pSP Red = "Rd"
 pSP Blue = "Bl"
 
 prettyShowBoard :: Board -> String
-prettyShowBoard (boxes, lines, legals, size, player) = do
-    ("Current Player: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+prettyShowBoard board@(boxes, lines, legals, size, player) = case checkWin board of
+    Nothing -> ("Current Player: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+    Win player -> ("Winner: " ++ show player ++ "\n") ++ prettyBoardSwag points []
     where points = [(x,y) | x <- [1..size], y <- [1..size]]
           prettyBoardSwag [] acc = []
           prettyBoardSwag (p:ps) acc
@@ -113,7 +114,6 @@ checkWin (boxes, _, _, size, player)
               isDone = length boxes == numBoxes
               numBoxes = (size - 1)^2
               redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
-            --   redBoxes = length (filter (\x -> snd x == Red) boxes)
 
 Just startBoard = makeBoard 3
 startPrint = putStr (prettyShowBoard startBoard)
