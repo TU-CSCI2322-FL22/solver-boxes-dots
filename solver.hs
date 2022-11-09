@@ -58,8 +58,16 @@ makeMove (row1,col1) (row2,col2) (_, lines, legals, _, player)
                 | otherwise = Nothing
 
 -- makes a box out of the given lines and the player that made it
-makeBox :: Move -> Board -> Maybe Box
-makeBox (line, player) (boxes, lines, _, _, _) = undefined
+makeBox :: Move -> Board -> [Box]
+makeBox (line@((row, col), direction), player) (boxes, lines, _, _, _) =
+    if direction == Rght 
+    then checkBoxHelper(row-1, col)++checkBoxHelper(row, col)
+    else checkBoxHelper(row, col-1)++checkBoxHelper(row, col)
+        where checkBoxHelper point@(row2, col2) = 
+                if l `intersect` (line:lines) ==  l
+                then [(point, player)]
+                else []
+                    where l = [(point, Rght),(point, Dwn), ((row2+1, col2), Rght), ((row2, col2+1), Dwn)]
 
 -- takes in a line and adds it to the board
 -- checks if the line can form a new box using "canMakeBox"
@@ -67,24 +75,24 @@ makeBox (line, player) (boxes, lines, _, _, _) = undefined
 -- it changes the player if a box wasn't made and keeps the player the same if not
 updateBoard :: Board -> Move -> Board
 updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player) = case makeBox move board of
-    Just x -> (x:boxes, line:lines, (delete line legals), size, player)
-    Nothing -> (boxes, line:lines, (delete line legals), size, (negPlayer player))
-        where negPlayer Red = Blue
-              negPlayer Blue = Red
+    [] -> (boxes, line:lines, (delete line legals), size, (negPlayer player))
+    x -> (x++boxes, line:lines, (delete line legals), size, player)
+    where negPlayer Red = Blue
+          negPlayer Blue = Red
 
--- checks if someone has won the game or tied and if neither has happened then it will return nothing
--- meaning the game must still go on
+
+
 checkWin :: Board -> Maybe Win
 checkWin (boxes, _, _, size, player) 
-    | isDone && redBoxes < halfBoxes = Win Blue
-    | isDone && redBoxes > halfBoxes = Win Red
-    | isDone                         = Tie
+    | isDone && redBoxes < halfBoxes = Just (Winner Blue)
+    | isDone && redBoxes > halfBoxes = Just (Winner Red)
+    | isDone                         = Just (Tie)
     | otherwise                      = Nothing
-        where halfBoxes = numBoxes / 2
+        where halfBoxes = numBoxes `div` 2 --(fromIntegral numBoxes) / (fromIntegral 2)
               isDone = length boxes == numBoxes
-              numBoxes = (size - 1) ** 2
-              redBoxes = foldr (\(_,player) acc if player == Red then 1 + acc else acc) 0 boxes
+              numBoxes = (size - 1)^2
+              --redBoxes = foldr (\(_,player) acc if player == Red then 1 + acc else acc) 0 boxes
+              redBoxes = length (filter (\x -> snd x == Red) boxes)
 
-
-gameState = makeBoard 3
+gameState = makeBoard 2
 Just move = makeMove (1,1) (1,2) gameState
