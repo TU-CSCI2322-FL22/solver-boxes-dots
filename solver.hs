@@ -125,4 +125,4 @@ wholeBoard3 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red)], (legalMoves
 wholeBoard4 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red),((1,3),Red),((2,3),Blue),((3,1),Blue),((3,2),Red),((3,3),Blue)], (legalMoves 4), [], 4, Blue)
 testBoard = updateBoard boardWithBox (((1,3),Dwn),Blue)
 printWholeBoard3 = showGame wholeBoard3
-printTest = pSBIO testBoard
+printTest = showGame testBoard
