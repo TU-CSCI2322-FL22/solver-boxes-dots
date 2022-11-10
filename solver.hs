@@ -26,8 +26,28 @@ type Board = ([Box], [Line], LegalMoves, Int, Player)
 -------------------------------------------------------------------------------------------------
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
+
 prettyShowBoard :: Board -> String
-prettyShowBoard (boxes,lines, legals, _, player) = undefined
+prettyShowBoard board@(boxes, lines, legals, size, player) = case checkWin board of
+    Nothing -> ("Current Player: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+    Just (Winner player) -> ("Winner: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+    Just Tie -> ("TIE\n") ++ prettyBoardSwag points []
+    where points = [(x,y) | x <- [1..size], y <- [1..size]]
+          prettyBoardSwag [] acc = []
+          prettyBoardSwag (p:ps) acc
+            | (p,Rght) `elem` lines && (p,Dwn) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ ("  |  " ++ plyr))
+            | (p,Rght) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ "       ")
+            | (p,Dwn) `elem` lines = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ ("  |    ")) else show p ++ "\n" ++ acc ++ "  |\n" ++ prettyBoardSwag ps []
+            | otherwise = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ "       ") else show p ++ "\n" ++ acc ++ "\n" ++ prettyBoardSwag ps []
+                where plyr = if (p,Blue) `elem` boxes then "Bl" else if (p,Red) `elem` boxes then "Rd" else "  "
+
+showGame :: Board -> IO ()
+showGame board = putStr $ prettyShowBoard board
+-- (1,1)--(1,2)--(1,3)
+--   |  Rd  |      |
+-- (2,1)--(2,2)--(2,3)
+--   |  Rd  |            
+-- (3,1)--(3,2)  (3,3)
 
 -------------------------------------------------------------------------------------------------
 --                             FUNCTIONS FOR DOTS AND BOXES
@@ -82,8 +102,7 @@ updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player) = c
     where negPlayer Red = Blue
           negPlayer Blue = Red
 
-
-
+-- Checks the board if someone has won, tied, or if the game is still going by returning nothing
 checkWin :: Board -> Maybe Win
 checkWin (boxes, _, _, size, player) 
     | isDone && redBoxes < halfBoxes = Just (Winner Blue)
@@ -95,5 +114,15 @@ checkWin (boxes, _, _, size, player)
               numBoxes = (size - 1)^2
               redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
 
-Just gameState = makeBoard 3
-Just move = makeMove (1,1) (1,2) gameState
+-------------------------------------------------------------------------------------------------
+--                                      TESTING STUFF
+-------------------------------------------------------------------------------------------------
+
+Just startBoard = makeBoard 3
+startPrint = putStr (prettyShowBoard startBoard)
+boardWithBox = ([((1,1), Blue)],[((1,1),Dwn),((1,1),Rght),((1,2),Dwn),((2,1),Rght)],[((1,2),Rght), ((1,3),Dwn),((2,1),Dwn),((2,2),Dwn),((2,2),Rght),((2,3),Dwn),((3,1),Rght),((3,2),Rght)],3,Blue)
+wholeBoard3 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red)], (legalMoves 3), [], 3, Blue)
+wholeBoard4 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red),((1,3),Red),((2,3),Blue),((3,1),Blue),((3,2),Red),((3,3),Blue)], (legalMoves 4), [], 4, Blue)
+testBoard = updateBoard boardWithBox (((1,3),Dwn),Blue)
+printWholeBoard3 = showGame wholeBoard3
+printTest = showGame testBoard
