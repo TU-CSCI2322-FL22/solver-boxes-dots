@@ -1,12 +1,18 @@
 module GameState
-( prettyShowBoard
+( Player
+, Win
+, Direction
+, prettyShowBoard
 , makeBoard
 , legalMoves
 , makeMove
 , makeBox
 , updateBoard
 , checkWin
-)
+, showGame
+) where
+
+import Data.List
 -------------------------------------------------------------------------------------------------
 --                              DATA TYPES FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
