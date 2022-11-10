@@ -1,7 +1,6 @@
 module GameState
-( Player
-, Win
-, Direction
+( Player (..)
+, Direction (..)
 , prettyShowBoard
 , makeBoard
 , legalMoves
