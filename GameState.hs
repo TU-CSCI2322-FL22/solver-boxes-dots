@@ -35,7 +35,7 @@ type Line = (Point, Direction)
 -- Represents a box with the point in the top left  corner and the player who made it
 type Box = (Point,Player)
 -- Represents the move of a player
-type Move = (Line,Player)
+type Move = Line
 -- Represents the legal moves that can be made
 type LegalMoves = [Line]
 -- Represents the game state as 
@@ -95,12 +95,12 @@ makeMove (row1,col1) (row2,col2) (_, lines, legals, _, player)
     | (abs (col1-col2) == 1 && row1 == row2) = makeMoveHelper ((row1, (min col1 col2)), Rght)
     | otherwise = Nothing
         where makeMoveHelper line 
-                | line `elem` legals = Just (line, player) 
+                | line `elem` legals = Just line
                 | otherwise = Nothing
 
 -- makes a box out of the given lines and the player that made it
 makeBox :: Move -> Board -> [Box]
-makeBox (line@((row, col), direction), player) (boxes, lines, _, _, _) =
+makeBox line@((row, col), direction) (boxes, lines, _, _, player) =
     if direction == Rght 
     then checkBoxHelper(row-1, col)++checkBoxHelper(row, col)
     else checkBoxHelper(row, col-1)++checkBoxHelper(row, col)
@@ -115,8 +115,8 @@ makeBox (line@((row, col), direction), player) (boxes, lines, _, _, _) =
 -- if it can, it makes a box and adds it to the list as well
 -- it changes the player if a box wasn't made and keeps the player the same if not
 updateBoard :: Board -> Move -> Maybe Board
-updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player)
-    | line `elem` legals = case makeBox move board of
+updateBoard board@(boxes, lines, legals, size, player) line
+    | line `elem` legals = case makeBox line board of
                             [] -> Just (boxes, line:lines, (delete line legals), size, (negPlayer player))
                             x -> Just (x++boxes, line:lines, (delete line legals), size, player)
     | otherwise = Nothing
