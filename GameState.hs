@@ -129,5 +129,15 @@ checkWin (boxes, _, _, size, player)
 --                           READING/WRITING/PRINTING GAMESTATE
 -------------------------------------------------------------------------------------------------
 
-showGame :: Board -> IO ()
+putGame :: Board -> IO ()
 showGame board = putStr $ prettyShowBoard board
+
+showGame :: Board -> String
+
+readGame :: String -> Board
+
+writeGame :: Board -> FilePath -> IO ()
+
+loadGame :: FilePath -> IO Game 
+
+putWinner :: Board -> IO ()
