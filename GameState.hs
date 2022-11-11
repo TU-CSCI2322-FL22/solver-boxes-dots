@@ -4,11 +4,17 @@ module GameState
 , prettyShowBoard
 , makeBoard
 , legalMoves
+, validMoves
 , makeMove
 , makeBox
 , updateBoard
 , checkWin
+, putGame
 , showGame
+, readGame
+, writeGame
+, loadGame
+, putWinner
 ) where
 
 import Data.List
@@ -79,6 +85,9 @@ legalMoves size = legalMovesHelper 1 1
             | row == size                = ((row, col), Rght) : (legalMovesHelper row (col + 1))
             | otherwise                  = ((row,col), Dwn) : ((row,col), Rght) : (legalMovesHelper row (col + 1))
 
+validMoves :: Board -> [Line]
+validMoves (_, _, legalMoves, _, _) = legalMoves
+
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
 makeMove :: Point -> Point -> Board -> Maybe Move
 makeMove (row1,col1) (row2,col2) (_, lines, legals, _, player)
@@ -141,3 +150,4 @@ writeGame :: Board -> FilePath -> IO ()
 loadGame :: FilePath -> IO Game 
 
 putWinner :: Board -> IO ()
+
