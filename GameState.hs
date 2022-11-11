@@ -10,7 +10,6 @@ module GameState
 , updateBoard
 , checkWin
 , putGame
-, showGame
 , readGame
 , writeGame
 , loadGame
@@ -142,9 +141,6 @@ checkWin (boxes, _, _, size, player)
 
 putGame :: Board -> IO ()
 putGame board = putStr $ prettyShowBoard board
-
-showGame :: Board -> String
-showGame = undefined
 
 readGame :: String -> Board
 readGame = undefined
