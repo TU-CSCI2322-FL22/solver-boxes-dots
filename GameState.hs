@@ -114,12 +114,14 @@ makeBox (line@((row, col), direction), player) (boxes, lines, _, _, _) =
 -- checks if the line can form a new box using "canMakeBox"
 -- if it can, it makes a box and adds it to the list as well
 -- it changes the player if a box wasn't made and keeps the player the same if not
-updateBoard :: Board -> Move -> Board
-updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player) = case makeBox move board of
-    [] -> (boxes, line:lines, (delete line legals), size, (negPlayer player))
-    x -> (x++boxes, line:lines, (delete line legals), size, player)
-    where negPlayer Red = Blue
-          negPlayer Blue = Red
+updateBoard :: Board -> Move -> Maybe Board
+updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player)
+    | line `elem` legals = case makeBox move board of
+                            [] -> Just (boxes, line:lines, (delete line legals), size, (negPlayer player))
+                            x -> Just (x++boxes, line:lines, (delete line legals), size, player)
+    | otherwise = Nothing
+        where negPlayer Red = Blue
+              negPlayer Blue = Red
 
 -- Checks the board if someone has won, tied, or if the game is still going by returning nothing
 checkWin :: Board -> Maybe Win
@@ -139,15 +141,19 @@ checkWin (boxes, _, _, size, player)
 -------------------------------------------------------------------------------------------------
 
 putGame :: Board -> IO ()
-showGame board = putStr $ prettyShowBoard board
+putGame board = putStr $ prettyShowBoard board
 
 showGame :: Board -> String
+showGame = undefined
 
 readGame :: String -> Board
+readGame = undefined
 
 writeGame :: Board -> FilePath -> IO ()
+writeGame = undefined
 
-loadGame :: FilePath -> IO Game 
+loadGame :: FilePath -> IO Board 
+loadGame = undefined
 
 putWinner :: Board -> IO ()
-
+putWinner = undefined
