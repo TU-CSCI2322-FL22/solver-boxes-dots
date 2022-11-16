@@ -1,5 +1,8 @@
 module GameState
-( Player (..)
+( Board (..)
+, Line (..)
+, Box (..)
+, Player (..)
 , Direction (..)
 , prettyShowBoard
 , makeBoard
@@ -22,13 +25,13 @@ import Data.List
 -------------------------------------------------------------------------------------------------
 
 -- Represents the players of the game devided into the colors red and blue
-data Player = Red | Blue deriving (Show,Eq)
+data Player = Red | Blue deriving (Show,Eq,Read)
 -- Describes the winner or a tie
 data Win = Winner Player | Tie deriving Show
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
-data Direction = Rght | Dwn deriving (Show, Eq)
+data Direction = Rght | Dwn deriving (Show, Eq, Read)
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
 -- Represents a box with the point in the top left  corner and the player who made it
@@ -143,13 +146,26 @@ putGame :: Board -> IO ()
 putGame board = putStr $ prettyShowBoard board
 
 readGame :: String -> Board
-readGame = undefined
+readGame = read
 
 writeGame :: Board -> FilePath -> IO ()
-writeGame = undefined
+writeGame board file = do
+    writeFile file (show board)
+    return ()
 
 loadGame :: FilePath -> IO Board 
-loadGame = undefined
+loadGame file = do
+    contents <- readFile file
+    return $ read contents
 
 putWinner :: Board -> IO ()
-putWinner = undefined
+putWinner board = case checkWin board of
+    Just (Winner x) -> do
+        putStr ("Winner is: " ++ show x)
+        return ()
+    Just Tie -> do
+        putStr "There is a Tie"
+        return ()
+    Nothing -> do
+        putStr "Game isn't finished yet"
+        return ()
