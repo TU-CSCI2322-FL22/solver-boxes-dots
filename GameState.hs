@@ -2,7 +2,9 @@ module GameState
 ( Board (..)
 , Line (..)
 , Box (..)
+, Move (..)
 , Player (..)
+, Win (..)
 , Direction (..)
 , prettyShowBoard
 , makeBoard
