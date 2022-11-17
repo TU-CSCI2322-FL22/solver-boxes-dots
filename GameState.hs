@@ -1,14 +1,24 @@
 module GameState
-( Player (..)
+( Board (..)
+, Line (..)
+, Box (..)
+, Move (..)
+, Player (..)
+, Win (..)
 , Direction (..)
 , prettyShowBoard
 , makeBoard
 , legalMoves
+, validMoves
 , makeMove
 , makeBox
 , updateBoard
 , checkWin
-, showGame
+, putGame
+, readGame
+, writeGame
+, loadGame
+, putWinner
 ) where
 
 import Data.List
@@ -17,19 +27,19 @@ import Data.List
 -------------------------------------------------------------------------------------------------
 
 -- Represents the players of the game devided into the colors red and blue
-data Player = Red | Blue deriving (Show,Eq)
+data Player = Red | Blue deriving (Show,Eq,Read)
 -- Describes the winner or a tie
 data Win = Winner Player | Tie deriving Show
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
-data Direction = Rght | Dwn deriving (Show, Eq)
+data Direction = Rght | Dwn deriving (Show, Eq, Read)
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
 -- Represents a box with the point in the top left  corner and the player who made it
 type Box = (Point,Player)
 -- Represents the move of a player
-type Move = (Line,Player)
+type Move = Line
 -- Represents the legal moves that can be made
 type LegalMoves = [Line]
 -- Represents the game state as 
@@ -79,6 +89,9 @@ legalMoves size = legalMovesHelper 1 1
             | row == size                = ((row, col), Rght) : (legalMovesHelper row (col + 1))
             | otherwise                  = ((row,col), Dwn) : ((row,col), Rght) : (legalMovesHelper row (col + 1))
 
+validMoves :: Board -> [Line]
+validMoves (_, _, legalMoves, _, _) = legalMoves
+
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
 makeMove :: Point -> Point -> Board -> Maybe Move
 makeMove (row1,col1) (row2,col2) (_, lines, legals, _, player)
@@ -86,12 +99,12 @@ makeMove (row1,col1) (row2,col2) (_, lines, legals, _, player)
     | (abs (col1-col2) == 1 && row1 == row2) = makeMoveHelper ((row1, (min col1 col2)), Rght)
     | otherwise = Nothing
         where makeMoveHelper line 
-                | line `elem` legals = Just (line, player) 
+                | line `elem` legals = Just line
                 | otherwise = Nothing
 
 -- makes a box out of the given lines and the player that made it
 makeBox :: Move -> Board -> [Box]
-makeBox (line@((row, col), direction), player) (boxes, lines, _, _, _) =
+makeBox line@((row, col), direction) (boxes, lines, _, _, player) =
     if direction == Rght 
     then checkBoxHelper(row-1, col)++checkBoxHelper(row, col)
     else checkBoxHelper(row, col-1)++checkBoxHelper(row, col)
@@ -105,12 +118,14 @@ makeBox (line@((row, col), direction), player) (boxes, lines, _, _, _) =
 -- checks if the line can form a new box using "canMakeBox"
 -- if it can, it makes a box and adds it to the list as well
 -- it changes the player if a box wasn't made and keeps the player the same if not
-updateBoard :: Board -> Move -> Board
-updateBoard board@(boxes, lines, legals, size, currentP) move@(line, player) = case makeBox move board of
-    [] -> (boxes, line:lines, (delete line legals), size, (negPlayer player))
-    x -> (x++boxes, line:lines, (delete line legals), size, player)
-    where negPlayer Red = Blue
-          negPlayer Blue = Red
+updateBoard :: Board -> Move -> Maybe Board
+updateBoard board@(boxes, lines, legals, size, player) line
+    | line `elem` legals = case makeBox line board of
+                            [] -> Just (boxes, line:lines, (delete line legals), size, (negPlayer player))
+                            x -> Just (x++boxes, line:lines, (delete line legals), size, player)
+    | otherwise = Nothing
+        where negPlayer Red = Blue
+              negPlayer Blue = Red
 
 -- Checks the board if someone has won, tied, or if the game is still going by returning nothing
 checkWin :: Board -> Maybe Win
@@ -130,14 +145,29 @@ checkWin (boxes, _, _, size, player)
 -------------------------------------------------------------------------------------------------
 
 putGame :: Board -> IO ()
-showGame board = putStr $ prettyShowBoard board
-
-showGame :: Board -> String
+putGame board = putStr $ prettyShowBoard board
 
 readGame :: String -> Board
+readGame = read
 
 writeGame :: Board -> FilePath -> IO ()
+writeGame board file = do
+    writeFile file (show board)
+    return ()
 
-loadGame :: FilePath -> IO Game 
+loadGame :: FilePath -> IO Board 
+loadGame file = do
+    contents <- readFile file
+    return $ read contents
 
 putWinner :: Board -> IO ()
+putWinner board = case checkWin board of
+    Just (Winner x) -> do
+        putStr ("Winner is: " ++ show x)
+        return ()
+    Just Tie -> do
+        putStr "There is a Tie"
+        return ()
+    Nothing -> do
+        putStr "Game isn't finished yet"
+        return ()
