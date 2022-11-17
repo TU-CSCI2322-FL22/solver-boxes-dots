@@ -1,4 +1,5 @@
 import GameState
+import Solver
 
 Just startBoard = makeBoard 3
 startPrint = putStr (prettyShowBoard startBoard)
