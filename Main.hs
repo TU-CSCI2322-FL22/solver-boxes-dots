@@ -25,40 +25,36 @@ loadGame file = do
     return $ read contents
 
 putWinner :: Board -> IO ()
-putWinner board = case checkWin board of
-    Just (Winner x) -> do
-        putStr ("Winner is: " ++ show x)
-        return ()
-    Just Tie -> do
-        putStr "There is a Tie"
-        return ()
-    Nothing -> do
-        putStr "Game isn't finished yet"
-        return ()
+putWinner board = putStr $ "Result: " ++ (show $ whoWillWin board)  ++ "\n"
+
 
 main :: IO ()
 main = do
   args <- getArgs
   let fname = if null args then "gamestate.txt" else head args
   game <- loadGame fname
-  putStr "Move Format: (x1,y1) (x2,y2)"
-  let move = getMove game
+  putWinner game
   return ()
+  
 
-getMove :: Board -> Move
-getMove board = do
-    input <- prompt "Input move"
-    let (p1:p2:ps) = map read (words input) :: [Point]
-    let move = makeMove p1 p2 board
-    case move of
-        Nothing -> getMove board
-        Just x -> x
+--   putStr "Move Format: (x1,y1) (x2,y2)"
+--   let move = getMove game
+--   return ()
+
+-- getMove :: Board -> Move
+-- getMove board = do
+--     input <- prompt "Input move"
+--     let (p1:p2:ps) = map read (words input) :: [Point]
+--     let move = makeMove p1 p2 board
+--     case move of
+--         Nothing -> getMove board
+--         Just x -> x
         
 
 
-prompt :: String -> IO String
-prompt question = do
-  putStr $ question ++ ": "
-  hFlush stdout
-  response <- getLine
-  return response
+-- prompt :: String -> IO String
+-- prompt question = do
+--   putStr $ question ++ ": "
+--   hFlush stdout
+--   response <- getLine
+--   return response

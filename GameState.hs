@@ -16,11 +16,6 @@ module GameState
 , makeBox
 , updateBoard
 , checkWin
-, putGame
-, readGame
-, writeGame
-, loadGame
-, putWinner
 ) where
 
 import Data.List
