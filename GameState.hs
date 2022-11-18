@@ -5,6 +5,7 @@ module GameState
 , Move (..)
 , Player (..)
 , Win (..)
+, Point (..)
 , Direction (..)
 , prettyShowBoard
 , makeBoard
@@ -143,36 +144,3 @@ checkWin (boxes, _, _, size, player)
               isDone = length boxes == numBoxes
               numBoxes = (size - 1)^2
               redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
-
-
--------------------------------------------------------------------------------------------------
---                           READING/WRITING/PRINTING GAMESTATE
--------------------------------------------------------------------------------------------------
-
-putGame :: Board -> IO ()
-putGame board = putStr $ prettyShowBoard board
-
-readGame :: String -> Board
-readGame = read
-
-writeGame :: Board -> FilePath -> IO ()
-writeGame board file = do
-    writeFile file (show board)
-    return ()
-
-loadGame :: FilePath -> IO Board 
-loadGame file = do
-    contents <- readFile file
-    return $ read contents
-
-putWinner :: Board -> IO ()
-putWinner board = case checkWin board of
-    Just (Winner x) -> do
-        putStr ("Winner is: " ++ show x)
-        return ()
-    Just Tie -> do
-        putStr "There is a Tie"
-        return ()
-    Nothing -> do
-        putStr "Game isn't finished yet"
-        return ()
