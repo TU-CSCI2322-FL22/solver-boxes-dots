@@ -17,11 +17,12 @@ whoWillWin board@(_,_,_,_,player) = case checkWin board of
         | otherwise -> Winner (negPlayer player)
         where vegeta =  map whoWillWin $ catMaybes $ map (updateBoard board) (validMoves board)
 
-bestMove :: Board -> Move
+bestMove :: Board -> Maybe Move
+bestMove (_,_,[],_,_) = Nothing
 bestMove board@(_,_,_,_,player) 
-    | winnerPlayer /= Nothing = fromJust winnerPlayer
-    | tier /= Nothing = fromJust tier
-    | otherwise = ku
+    | winnerPlayer /= Nothing = winnerPlayer
+    | tier /= Nothing = tier
+    | otherwise = Just ku
     where winnerPlayer = (Winner player) `lookup` (gohan)
           tier = Tie `lookup` gohan
           gohan@((go,ku):chan) = catMaybes $ map krillin (validMoves board)
