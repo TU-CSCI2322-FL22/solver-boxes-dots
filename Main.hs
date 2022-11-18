@@ -4,30 +4,6 @@ import Solver
 import System.IO
 import System.Environment
 
--------------------------------------------------------------------------------------------------
---                           READING/WRITING/PRINTING GAMESTATE
--------------------------------------------------------------------------------------------------
-
-putGame :: Board -> IO ()
-putGame board = putStr $ prettyShowBoard board
-
-readGame :: String -> Board
-readGame = read
-
-writeGame :: Board -> FilePath -> IO ()
-writeGame board file = do
-    writeFile file (show board)
-    return ()
-
-loadGame :: FilePath -> IO Board 
-loadGame file = do
-    contents <- readFile file
-    return $ read contents
-
-putWinner :: Board -> IO ()
-putWinner board = putStr $ "Result: " ++ (show $ whoWillWin board)  ++ "\n"
-
-
 main :: IO ()
 main = do
   args <- getArgs
