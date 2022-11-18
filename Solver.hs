@@ -24,11 +24,11 @@ whoWillWin board@(_,_,_,_,player) =
 bestMove :: Board -> Maybe Move
 bestMove (_,_,[],_,_) = Nothing
 bestMove board@(_,_,_,_,player) =
-    case ((Winner player) `lookup` gohan, Tie `lookup` gohan, gohan) of
+    case ((Winner player) `lookup` goku, Tie `lookup` goku, goku) of
         (Just wm, _, _) -> Just wm
         (Nothing, Just tm, _) -> Just tm
         (Nothing, Nothing, (wn,mv):_) -> Just mv
-    where gohan = catMaybes $ map krillin (validMoves board)
+    where goku = catMaybes $ map krillin (validMoves board)
           krillin :: Move -> Maybe (Win,Move)
           krillin move = case updateBoard board move of
                             Nothing -> Nothing
