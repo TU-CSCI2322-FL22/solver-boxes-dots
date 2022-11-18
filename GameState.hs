@@ -139,11 +139,6 @@ checkWin (boxes, _, _, size, player)
 
 
 -------------------------------------------------------------------------------------------------
---showGame :: board -> String
-showGame board =
-    let (boxes, lines, legals, sz, player) = board
-    in (bxsLns boxes) ++ "/#/" ++ (bxsLns lines) ++ "/#/" ++ (bxsLns legals) ++ "/#/" ++ (show sz) ++ "/#/" ++ (if player == Red then "Red" else "Blue")
-foldr (\h z -> h ++ z) "" [(show x) ++ "," ++ (show y) ++ ")," ++ snd(filter (\t -> pd == fst t) [(Red, "Red"), (Blue, "Blue"), (Rght, "Rght"), (Dwn, "Dwn")]) ++ "/&/" | ((x, y), pd)]
                            READING/WRITING/PRINTING GAMESTATE
 -------------------------------------------------------------------------------------------------
 {-
