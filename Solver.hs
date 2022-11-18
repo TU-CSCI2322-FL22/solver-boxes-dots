@@ -1,12 +1,20 @@
 module Solver
 ( whoWillWin
 , bestMove
+, putGame
+, readGame
+, writeGame
+, loadGame
+, putWinner
 ) where
 
 import GameState
 import Data.Maybe
 import Data.List
 
+-------------------------------------------------------------------------------------------------
+--                                  SOLVING THE GAME
+-------------------------------------------------------------------------------------------------
 
 -- checks who will win/tie from the given board state
 whoWillWin :: Board -> Win
@@ -33,5 +41,28 @@ bestMove board@(_,_,_,_,player) =
           krillin move = case updateBoard board move of
                             Nothing -> Nothing
                             Just x -> Just (whoWillWin x, move)
+
+-------------------------------------------------------------------------------------------------
+--                           READING/WRITING/PRINTING GAMESTATE
+-------------------------------------------------------------------------------------------------
+
+putGame :: Board -> IO ()
+putGame board = putStr $ prettyShowBoard board
+
+readGame :: String -> Board
+readGame = read
+
+writeGame :: Board -> FilePath -> IO ()
+writeGame board file = do
+    writeFile file (show board)
+    return ()
+
+loadGame :: FilePath -> IO Board 
+loadGame file = do
+    contents <- readFile file
+    return $ read contents
+
+putWinner :: Board -> IO ()
+putWinner board = putStr $ "Result: " ++ (show $ whoWillWin board)  ++ "\n"
 
 -- "He ain't beating Goku tho" - Matt
