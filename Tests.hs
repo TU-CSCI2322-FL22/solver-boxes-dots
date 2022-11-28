@@ -3,7 +3,7 @@ import Solver
 
 Just startBoard3 = makeBoard 3
 Just startBoard4 = makeBoard 4
-startPrint = putStr (prettyShowBoard startBoard)
+startPrint = putGame startBoard3
 boardWithBox = ([((1,1), Blue)],[((1,1),Dwn),((1,1),Rght),((1,2),Dwn),((2,1),Rght)],[((1,2),Rght), ((1,3),Dwn),((2,1),Dwn),((2,2),Dwn),((2,2),Rght),((2,3),Dwn),((3,1),Rght),((3,2),Rght)],3,Blue)
 
 wholeBoard3 = ([((1,1),Blue),((1,2),Blue),((2,1),Blue),((2,2),Red)], (legalMoves 3), [], 3, Blue)
