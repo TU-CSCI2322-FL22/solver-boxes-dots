@@ -26,7 +26,7 @@ whoWillWin board@(_,_,legals,_,player) =
             | (Winner player) `elem` vegeta -> Winner player
             | Tie `elem` vegeta -> Tie
             | otherwise -> Winner (negPlayer player)
-            where vegeta =  map whoWillWin $ catMaybes $ map (updateBoard board) (validMoves board)
+            where vegeta =  map whoWillWin $ mapMaybe (updateBoard board) (validMoves board)
 
 -- gives the best move for the player to make based on which move will force a win/tie
 bestMove :: Board -> Maybe Move
@@ -44,13 +44,13 @@ bestMove board@(_,_,_,_,player) =
 
 -- evaluates the board based on the Red player
 evaluate :: Board -> Int
-evaluate board@(_,boxes,_,size,_) = case checkWin board of
+evaluate board@(boxes,_,_,size,_) = case checkWin board of
     Just (Winner Red) -> size^2 + 1
     Just (Winner Blue) -> - (size^2 + 1)
     Just Tie -> 0
     Nothing -> redBoxes - blueBoxes
         where redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
-            blueBoxes = abs $ length boxes - redBoxes
+              blueBoxes = abs $ length boxes - redBoxes
 
 -------------------------------------------------------------------------------------------------
 --                           READING/WRITING/PRINTING GAMESTATE
