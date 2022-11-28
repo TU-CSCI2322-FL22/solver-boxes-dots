@@ -11,6 +11,7 @@ module Solver
 import GameState
 import Data.Maybe
 import Data.List
+import Debug.Trace
 
 -------------------------------------------------------------------------------------------------
 --                                  SOLVING THE GAME
@@ -18,10 +19,9 @@ import Data.List
 
 -- checks who will win/tie from the given board state
 whoWillWin :: Board -> Win
-whoWillWin board@(_,_,_,_,player) =
+whoWillWin board@(_,_,legals,_,player) = 
     case checkWin board of
-         Just (Winner x) -> Winner x
-         Just Tie -> Tie
+         Just x -> x
          Nothing
             | (Winner player) `elem` vegeta -> Winner player
             | Tie `elem` vegeta -> Tie
