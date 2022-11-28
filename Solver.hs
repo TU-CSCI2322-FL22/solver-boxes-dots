@@ -6,6 +6,8 @@ module Solver
 , writeGame
 , loadGame
 , putWinner
+, whoMightWin
+, aMove
 ) where
 
 import GameState
@@ -51,6 +53,14 @@ evaluate board@(boxes,_,_,size,_) = case checkWin board of
     Nothing -> redBoxes - blueBoxes
         where redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
               blueBoxes = abs $ length boxes - redBoxes
+
+-- goes to a constanct depth to figure out who might win given a board
+whoMightWin :: Board -> Int -> Win
+whoMightWin = undefined
+
+-- gets the best move that can be made by going only a constant depth
+aMove :: Board -> Int -> Maybe Move
+aMove = undefined
 
 -------------------------------------------------------------------------------------------------
 --                           READING/WRITING/PRINTING GAMESTATE

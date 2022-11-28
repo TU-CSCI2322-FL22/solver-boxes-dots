@@ -1,7 +1,8 @@
 import GameState
 import Solver
 
-Just startBoard = makeBoard 3
+Just startBoard3 = makeBoard 3
+Just startBoard4 = makeBoard 4
 startPrint = putStr (prettyShowBoard startBoard)
 boardWithBox = ([((1,1), Blue)],[((1,1),Dwn),((1,1),Rght),((1,2),Dwn),((2,1),Rght)],[((1,2),Rght), ((1,3),Dwn),((2,1),Dwn),((2,2),Dwn),((2,2),Rght),((2,3),Dwn),((3,1),Rght),((3,2),Rght)],3,Blue)
 
