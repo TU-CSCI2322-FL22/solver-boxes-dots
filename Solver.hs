@@ -42,6 +42,12 @@ bestMove board@(_,_,_,_,player) =
                             Nothing -> Nothing
                             Just x -> Just (whoWillWin x, move)
 
+-- evaluates the board based on the Red player
+evaluate :: Board -> Int
+evaluate board@(_,boxes,_,_,_) = redBoxes - blueBoxes
+    where redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
+          blueBoxes = abs $ length boxes - redBoxes
+
 -------------------------------------------------------------------------------------------------
 --                           READING/WRITING/PRINTING GAMESTATE
 -------------------------------------------------------------------------------------------------
