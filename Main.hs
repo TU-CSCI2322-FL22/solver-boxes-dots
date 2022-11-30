@@ -7,7 +7,7 @@ import System.Environment
 main :: IO ()
 main = do
   args <- getArgs
-  let fname =  "gamestate.txt"
+  let fname = if null args then "gamestate.txt" else head args
   game <- loadGame fname
   putWinner game
   return ()
