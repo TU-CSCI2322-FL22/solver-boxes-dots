@@ -55,12 +55,36 @@ evaluate board@(boxes,_,_,size,_) = case checkWin board of
               blueBoxes = abs $ length boxes - redBoxes
 
 -- goes to a constanct depth to figure out who might win given a board
-whoMightWin :: Board -> Int -> Win
-whoMightWin = undefined
+whoMightWin :: Int -> Board -> Win
+whoMightWin _ board@(_,_,[],_,_)
+    | score > 0 = Winner Red
+    | score < 0 = Winner Blue
+    | otherwise = Tie
+    where score = evaluate board
+whoMightWin 0 board
+    | score > 0 = Winner Red
+    | score < 0 = Winner Blue
+    | otherwise = Tie
+    where score = evaluate board
+whoMightWin depth board@(_,_,legals,_,player) 
+    | (Winner player) `elem` vegeta = Winner player
+    | Tie `elem` vegeta = Tie
+    | otherwise = Winner (negPlayer player)
+        where vegeta =  map (whoMightWin (depth-1)) (mapMaybe (updateBoard board) (validMoves board))
 
 -- gets the best move that can be made by going only a constant depth
 aMove :: Board -> Int -> Maybe Move
-aMove = undefined
+aMove (_,_,[],_,_) _ = Nothing
+aMove board@(_,_,_,_,player) depth =
+    case ((Winner player) `lookup` goku, Tie `lookup` goku, goku) of
+        (Just wm, _, _) -> Just wm
+        (Nothing, Just tm, _) -> Just tm
+        (Nothing, Nothing, (wn,mv):_) -> Just mv
+    where goku = catMaybes $ map krillin (validMoves board)
+          krillin :: Move -> Maybe (Win,Move)
+          krillin move = case updateBoard board move of
+                            Nothing -> Nothing
+                            Just x -> Just (whoMightWin depth x, move)
 
 -------------------------------------------------------------------------------------------------
 --                           READING/WRITING/PRINTING GAMESTATE
