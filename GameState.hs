@@ -5,20 +5,17 @@ module GameState
 , Move (..)
 , Player (..)
 , Win (..)
+, Point (..)
 , Direction (..)
 , prettyShowBoard
 , makeBoard
 , legalMoves
 , validMoves
+, negPlayer
 , makeMove
 , makeBox
 , updateBoard
 , checkWin
-, putGame
-, readGame
-, writeGame
-, loadGame
-, putWinner
 ) where
 
 import Data.List
@@ -29,7 +26,7 @@ import Data.List
 -- Represents the players of the game devided into the colors red and blue
 data Player = Red | Blue deriving (Show,Eq,Read)
 -- Describes the winner or a tie
-data Win = Winner Player | Tie deriving Show
+data Win = Winner Player | Tie deriving (Show, Eq)
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
@@ -89,8 +86,14 @@ legalMoves size = legalMovesHelper 1 1
             | row == size                = ((row, col), Rght) : (legalMovesHelper row (col + 1))
             | otherwise                  = ((row,col), Dwn) : ((row,col), Rght) : (legalMovesHelper row (col + 1))
 
+-- gets all the valid/legal moves from a board
 validMoves :: Board -> [Line]
 validMoves (_, _, legalMoves, _, _) = legalMoves
+
+-- "negates" a player
+negPlayer :: Player -> Player
+negPlayer Red = Blue
+negPlayer Blue = Red
 
 -- if the move is legal, it returns a line that can be played, else, it returns nothing
 makeMove :: Point -> Point -> Board -> Maybe Move
@@ -124,8 +127,6 @@ updateBoard board@(boxes, lines, legals, size, player) line
                             [] -> Just (boxes, line:lines, (delete line legals), size, (negPlayer player))
                             x -> Just (x++boxes, line:lines, (delete line legals), size, player)
     | otherwise = Nothing
-        where negPlayer Red = Blue
-              negPlayer Blue = Red
 
 -- Checks the board if someone has won, tied, or if the game is still going by returning nothing
 checkWin :: Board -> Maybe Win
@@ -138,36 +139,3 @@ checkWin (boxes, _, _, size, player)
               isDone = length boxes == numBoxes
               numBoxes = (size - 1)^2
               redBoxes = foldr (\(_,player) acc -> if player == Red then 1 + acc else acc) 0 boxes
-
-
--------------------------------------------------------------------------------------------------
---                           READING/WRITING/PRINTING GAMESTATE
--------------------------------------------------------------------------------------------------
-
-putGame :: Board -> IO ()
-putGame board = putStr $ prettyShowBoard board
-
-readGame :: String -> Board
-readGame = read
-
-writeGame :: Board -> FilePath -> IO ()
-writeGame board file = do
-    writeFile file (show board)
-    return ()
-
-loadGame :: FilePath -> IO Board 
-loadGame file = do
-    contents <- readFile file
-    return $ read contents
-
-putWinner :: Board -> IO ()
-putWinner board = case checkWin board of
-    Just (Winner x) -> do
-        putStr ("Winner is: " ++ show x)
-        return ()
-    Just Tie -> do
-        putStr "There is a Tie"
-        return ()
-    Nothing -> do
-        putStr "Game isn't finished yet"
-        return ()
