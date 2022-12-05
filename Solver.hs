@@ -1,11 +1,7 @@
 module Solver
 ( whoWillWin
 , bestMove
-, putGame
-, readGame
-, writeGame
-, loadGame
-, putWinner
+, evaluate
 , whoMightWin
 , aMove
 ) where
@@ -83,28 +79,3 @@ aMove board@(_,_,_,_,player) depth =
           krillin move = case updateBoard board move of
                             Nothing -> Nothing
                             Just x -> Just (whoMightWin x depth, move)
-
--------------------------------------------------------------------------------------------------
---                           READING/WRITING/PRINTING GAMESTATE
--------------------------------------------------------------------------------------------------
-
-putGame :: Board -> IO ()
-putGame board = putStr $ prettyShowBoard board
-
-readGame :: String -> Board
-readGame = read
-
-writeGame :: Board -> FilePath -> IO ()
-writeGame board file = do
-    writeFile file (show board)
-    return ()
-
-loadGame :: FilePath -> IO Board 
-loadGame file = do
-    contents <- readFile file
-    return $ read contents
-
-putWinner :: Board -> IO ()
-putWinner board = putStr $ "Result: " ++ (show $ whoWillWin board)  ++ "\n"
-
--- "He ain't beating Goku tho" - Matt
