@@ -4,6 +4,7 @@ import Solver
 import System.IO
 import Text.Read
 import Data.Maybe
+import System.Directory
 import System.Environment
 import System.Console.GetOpt
 
@@ -26,12 +27,16 @@ main = do
     then putStrLn $ usageInfo "Main [option] [file]" options
     else do
       let fname = if null inputs then "TestFiles/gamestate.txt" else head inputs
-      game <- loadGame fname
-      winnerCheck flags game
-      moveCheck flags game
-      depth <- depthCheck flags game
-      verboseCheck flags game depth
-      return ()
+      Just game <- loadGame fname
+      if(null error) then do
+        if null flags then putGame game else do -- change from modify and action
+          winnerCheck flags game
+          moveCheck flags game
+          depth <- depthCheck flags game
+          verboseCheck flags game depth -- get rid of fromJust
+          return ()
+      else putStr $ "Invalid flags:\n" ++ concat error
+      
 
 -------------------------------------------------------------------------------------------------
 --                                  FLAG FUNCTIONS                                             --
@@ -45,9 +50,9 @@ winnerCheck flags board
 moveCheck :: [Flag] -> Board -> IO ()
 moveCheck ((Move x):_) board = 
   case readMove x board of
-    Nothing -> error "That's not a move. Try again." 
+    Nothing -> putStrLn "That's not a move. Try again." 
     Just n -> case updateBoard board n of
-      Nothing -> error "That move is illegal!"
+      Nothing -> putStrLn "That move is illegal!"
       Just x -> putShitGame x
 moveCheck (_:flags) board = moveCheck flags board
 moveCheck [] board = return ()
@@ -55,24 +60,26 @@ moveCheck [] board = return ()
 depthCheck :: [Flag] -> Board -> IO Int
 depthCheck ((Depth x):_) board = 
   case readMaybeInt x of
-    Nothing -> error "That's not an Int."
+    Nothing -> do
+      putStrLn "That's not an invalid depth (defaulted to 6)."
+      return 6
     Just n -> return n
 depthCheck (_:flags) board = depthCheck flags board
-depthCheck [] board = return $ length (validMoves board)
+depthCheck [] board = return 6
 
 verboseCheck :: [Flag] -> Board -> Int -> IO ()
 verboseCheck flags board depth 
   | Verbose `elem` flags = case aMove board depth of
-      Nothing -> error "There are no more moves to be made!"
+      Nothing -> putStrLn "There are no more moves to be made!"
       Just x -> do
-        putStr $ "Move: " ++ show x ++ "\n"
+        putStrLn $ "Move: " ++ show x
         if(length (validMoves board) == 1) 
           then case whoWillWin board of 
-            Winner x -> putStr $ show $ "Result: " ++ show x ++ " will win\n"
-            Tie -> putStr "Result: It will be a Tie\n"
+            Winner x -> putStrLn $ show $ "Result: " ++ show x ++ " will win"
+            Tie -> putStrLn "Result: It will be a Tie"
           else case updateBoard board x of
-            Nothing -> error "something really bad happened!"
-            Just x -> putStr $ "Rating: " ++ show (evaluate x) ++ "\n"
+            Nothing -> putStrLn "something really bad happened!"
+            Just x -> putStrLn $ "Rating: " ++ show (evaluate x)
   | otherwise = return ()
     where 
 
@@ -98,7 +105,7 @@ putGame :: Board -> IO ()
 putGame board = putStr $ prettyShowBoard board
 
 putShitGame :: Board -> IO ()
-putShitGame board = putStr $ show board ++ "\n"
+putShitGame board = putStrLn $ show board
 
 readGame :: String -> Board
 readGame = read
@@ -108,10 +115,14 @@ writeGame board file = do
     writeFile file (show board)
     return ()
 
-loadGame :: FilePath -> IO Board 
+loadGame :: FilePath -> IO (Maybe Board) 
 loadGame file = do
-    contents <- readFile file
-    return $ read contents
+  b <- doesFileExist file
+  if b 
+      then do
+        contents <- readFile file
+        return $ readMaybe contents
+      else return Nothing
 
 putWinner :: Board -> IO ()
 putWinner board = putStr $ "Result: " ++ (show $ whoWillWin board)  ++ "\n"

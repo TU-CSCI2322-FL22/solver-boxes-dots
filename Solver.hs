@@ -59,6 +59,7 @@ whoMightWin board@(_,_,legals,_,player) depth
     | Tie `elem` vegeta = Tie
     | otherwise = Winner (negPlayer player)
         where vegeta =  map (\bd -> whoMightWin bd (depth-1)) (mapMaybe (updateBoard board) (validMoves board))
+
 doIt :: Board -> Win
 doIt board 
     | score > 0 = Winner Red
