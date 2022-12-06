@@ -52,7 +52,8 @@ evaluate board@(boxes,_,_,size,_) = case checkWin board of
 
 -- goes to a constanct depth to figure out who might win given a board
 whoMightWin :: Board -> Int -> Win
-whoMightWin board@(_,_,[],_,_) _ = checkWin 
+whoMightWin board@(_,_,[],_,_) _ = case checkWin board of
+    Nothing 
 whoMightWin board 0 = doIt board
 whoMightWin board@(_,_,legals,_,player) depth 
     | (Winner player) `elem` vegeta = Winner player
