@@ -52,20 +52,13 @@ evaluate board@(boxes,_,_,size,_) = case checkWin board of
 
 -- goes to a constanct depth to figure out who might win given a board
 whoMightWin :: Board -> Int -> Win
-whoMightWin board@(_,_,[],_,_) _ = doIt board
+whoMightWin board@(_,_,[],_,_) _ = checkWin 
 whoMightWin board 0 = doIt board
 whoMightWin board@(_,_,legals,_,player) depth 
     | (Winner player) `elem` vegeta = Winner player
     | Tie `elem` vegeta = Tie
     | otherwise = Winner (negPlayer player)
         where vegeta =  map (\bd -> whoMightWin bd (depth-1)) (mapMaybe (updateBoard board) (validMoves board))
-
-doIt :: Board -> Win
-doIt board 
-    | score > 0 = Winner Red
-    | score < 0 = Winner Blue
-    | otherwise = Tie
-        where score = evaluate board
 
 -- gets the best move that can be made by going only a constant depth
 aMove :: Board -> Int -> Maybe Move
