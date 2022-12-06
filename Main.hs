@@ -15,7 +15,7 @@ options :: [OptDescr Flag]
 options = [ Option ['h'] ["help"] (NoArg Help) "Print usage information and exit."
           , Option ['w'] ["winner"] (NoArg Winna) "Prints out the best move of the given gamestate." 
           , Option ['d'] ["depth"] (ReqArg Depth "<depth>") "Changes the depth to <depth>."
-          , Option ['m'] ["move"] (ReqArg Move "<move>") "Updates the board with the given move."
+          , Option ['m'] ["move"] (ReqArg Move "<move>") "Updates the board with the given move. Move format: \"(r1,c1) (r2,c2)\"."
           , Option ['v'] ["verbose"] (NoArg Verbose) "Outputs both the move and a description of how good it is." 
           ]
 
@@ -27,35 +27,55 @@ main = do
     then putStrLn $ usageInfo "Main [option] [file]" options
     else do
       let fname = if null inputs then "TestFiles/gamestate.txt" else head inputs
-      Just game <- loadGame fname
-      if(null error) then do
-        if null flags then putGame game else do -- change from modify and action
-          winnerCheck flags game
-          moveCheck flags game
-          depth <- depthCheck flags game
-          verboseCheck flags game depth -- get rid of fromJust
+      board <- loadGame fname
+      case board of
+        Nothing -> do
+          putStrLn "That was an invalid file dummy!"
           return ()
-      else putStr $ "Invalid flags:\n" ++ concat error
+        Just game -> do
+          if null error then do
+            fullCheck flags game
+          else putStr $ "Invalid flags:\n" ++ concat error
       
 
 -------------------------------------------------------------------------------------------------
 --                                  FLAG FUNCTIONS                                             --
 -------------------------------------------------------------------------------------------------
 
-winnerCheck :: [Flag] -> Board -> IO ()
-winnerCheck flags board
-  | Winna `elem` flags = putMove board
-  | otherwise = return ()
+fullCheck :: [Flag] -> Board -> IO ()
+fullCheck [Winna] board = putMove board
+fullCheck [Move x] board = movePrint x board
+fullCheck flags board = 
+  if Winna `elem` flags || (isJust $ moveCheck flags)
+  then putStrLn "Incompatible flags." 
+  else do
+    depth <- depthCheck flags board
+    move <- printMFBoard depth board
+    case move of
+      Nothing -> return ()
+      Just x -> if Verbose `elem` flags then verboseCheck board x else return ()
 
-moveCheck :: [Flag] -> Board -> IO ()
-moveCheck ((Move x):_) board = 
-  case readMove x board of
+printMFBoard :: Int -> Board -> IO (Maybe Move)
+printMFBoard depth board = case aMove board depth of 
+  Nothing -> do
+    putStrLn "No more moves can be made"
+    return Nothing
+  Just x -> do 
+    putStrLn $ "Best move of depth " ++ show depth ++ ": " ++ show x
+    return (Just x)
+
+moveCheck :: [Flag] -> Maybe String
+moveCheck ((Move x):_) = Just x
+moveCheck (_:flags) = moveCheck flags
+moveCheck [] = Nothing
+
+movePrint :: String -> Board -> IO ()
+movePrint move board = 
+  case readMove move board of
     Nothing -> putStrLn "That's not a move. Try again." 
     Just n -> case updateBoard board n of
       Nothing -> putStrLn "That move is illegal!"
-      Just x -> putShitGame x
-moveCheck (_:flags) board = moveCheck flags board
-moveCheck [] board = return ()
+      Just x -> putUglyGame x
   
 depthCheck :: [Flag] -> Board -> IO Int
 depthCheck ((Depth x):_) board = 
@@ -67,22 +87,15 @@ depthCheck ((Depth x):_) board =
 depthCheck (_:flags) board = depthCheck flags board
 depthCheck [] board = return 6
 
-verboseCheck :: [Flag] -> Board -> Int -> IO ()
-verboseCheck flags board depth 
-  | Verbose `elem` flags = case aMove board depth of
-      Nothing -> putStrLn "There are no more moves to be made!"
-      Just x -> do
-        putStrLn $ "Move: " ++ show x
-        if(length (validMoves board) == 1) 
-          then case whoWillWin board of 
-            Winner x -> putStrLn $ show $ "Result: " ++ show x ++ " will win"
-            Tie -> putStrLn "Result: It will be a Tie"
-          else case updateBoard board x of
-            Nothing -> putStrLn "something really bad happened!"
-            Just x -> putStrLn $ "Rating: " ++ show (evaluate x)
-  | otherwise = return ()
-    where 
-
+verboseCheck :: Board -> Move -> IO ()
+verboseCheck board move =
+  if(length (validMoves board) == 1) 
+    then case whoWillWin board of 
+      Winner x -> putStrLn $ show $ "Result: " ++ show x ++ " will win"
+      Tie -> putStrLn "Result: It will be a Tie"
+    else case updateBoard board move of
+      Nothing -> putStrLn "something really bad happened!"
+      Just x -> putStrLn $ "Rating: " ++ show (evaluate x)
 
 -------------------------------------------------------------------------------------------------
 --                           READING/WRITING/PRINTING GAMESTATE
@@ -104,8 +117,8 @@ readMove move board = case sequence(map readMaybePoint (words move)) of
 putGame :: Board -> IO ()
 putGame board = putStr $ prettyShowBoard board
 
-putShitGame :: Board -> IO ()
-putShitGame board = putStrLn $ show board
+putUglyGame :: Board -> IO ()
+putUglyGame board = putStrLn $ show board
 
 readGame :: String -> Board
 readGame = read
