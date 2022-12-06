@@ -1,14 +1,11 @@
 module Solver
 ( whoWillWin
 , bestMove
-, putGame
-, readGame
-, writeGame
-, loadGame
-, putWinner
+, evaluate
 , whoMightWin
 , aMove
-) where
+) 
+where
 
 import GameState
 import Data.Maybe
@@ -55,56 +52,22 @@ evaluate board@(boxes,_,_,size,_) = case checkWin board of
               blueBoxes = abs $ length boxes - redBoxes
 
 -- goes to a constanct depth to figure out who might win given a board
-whoMightWin :: Board -> Int -> Win
-whoMightWin board@(_,_,[],_,_) _ = doIt board
-whoMightWin board 0 = doIt board
+whoMightWin :: Board -> Int -> Int
+whoMightWin board@(_,_,[],_,_) _ = evaluate board
+whoMightWin board 0 = evaluate board
 whoMightWin board@(_,_,legals,_,player) depth 
-    | (Winner player) `elem` vegeta = Winner player
-    | Tie `elem` vegeta = Tie
-    | otherwise = Winner (negPlayer player)
+    | player == Blue = minimum vegeta
+    | otherwise      = maximum vegeta  
         where vegeta =  map (\bd -> whoMightWin bd (depth-1)) (mapMaybe (updateBoard board) (validMoves board))
-doIt :: Board -> Win
-doIt board 
-    | score > 0 = Winner Red
-    | score < 0 = Winner Blue
-    | otherwise = Tie
-        where score = evaluate board
 
 -- gets the best move that can be made by going only a constant depth
 aMove :: Board -> Int -> Maybe Move
 aMove (_,_,[],_,_) _ = Nothing
-aMove board@(_,_,_,_,player) depth =
-    case ((Winner player) `lookup` goku, Tie `lookup` goku, goku) of
-        (Just wm, _, _) -> Just wm
-        (Nothing, Just tm, _) -> Just tm
-        (Nothing, Nothing, (wn,mv):_) -> Just mv
+aMove board@(_,_,_,_,player) depth 
+    | player == Blue = Just $ snd (minimum goku)
+    | otherwise      = Just $ snd (maximum goku)
     where goku = catMaybes $ map krillin (validMoves board)
-          krillin :: Move -> Maybe (Win,Move)
+          krillin :: Move -> Maybe (Int,Move)
           krillin move = case updateBoard board move of
                             Nothing -> Nothing
                             Just x -> Just (whoMightWin x depth, move)
-
--------------------------------------------------------------------------------------------------
---                           READING/WRITING/PRINTING GAMESTATE
--------------------------------------------------------------------------------------------------
-
-putGame :: Board -> IO ()
-putGame board = putStr $ prettyShowBoard board
-
-readGame :: String -> Board
-readGame = read
-
-writeGame :: Board -> FilePath -> IO ()
-writeGame board file = do
-    writeFile file (show board)
-    return ()
-
-loadGame :: FilePath -> IO Board 
-loadGame file = do
-    contents <- readFile file
-    return $ read contents
-
-putWinner :: Board -> IO ()
-putWinner board = putStr $ "Result: " ++ (show $ whoWillWin board)  ++ "\n"
-
--- "He ain't beating Goku tho" - Matt

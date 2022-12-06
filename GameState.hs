@@ -30,7 +30,7 @@ data Win = Winner Player | Tie deriving (Show, Eq)
 -- a 2D point to represent the positions on the board 
 type Point = (Int,Int) 
 -- Represent the direction of the lines
-data Direction = Rght | Dwn deriving (Show, Eq, Read)
+data Direction = Rght | Dwn deriving (Show, Eq, Read, Ord)
 -- Represents a line made of two points, the given and the one in the direction given
 type Line = (Point, Direction)
 -- Represents a box with the point in the top left  corner and the player who made it
