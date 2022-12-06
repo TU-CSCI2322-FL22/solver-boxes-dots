@@ -115,7 +115,7 @@ readMove move board = case sequence(map readMaybePoint (words move)) of
   Just (_) -> Nothing
 
 putGame :: Board -> IO ()
-putGame board = putStr $ prettyShowBoard board
+putGame board = putStr $ showBoard board
 
 putUglyGame :: Board -> IO ()
 putUglyGame board = putStrLn $ show board

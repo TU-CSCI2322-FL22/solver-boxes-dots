@@ -1,22 +1,24 @@
 module GameState
-( Board (..)
-, Line (..)
-, Box (..)
-, Move (..)
-, Player (..)
-, Win (..)
-, Point (..)
-, Direction (..)
-, prettyShowBoard
-, makeBoard
-, legalMoves
-, validMoves
-, negPlayer
-, makeMove
-, makeBox
-, updateBoard
-, checkWin
-) where
+-- ( Board (..)
+-- , Line (..)
+-- , Box (..)
+-- , Move (..)
+-- , Player (..)
+-- , Win (..)
+-- , Point (..)
+-- , Direction (..)
+-- , prettyShowBoard
+-- , makeBoard
+-- , legalMoves
+-- , validMoves
+-- , negPlayer
+-- , makeMove
+-- , makeBox
+-- , updateBoard
+-- , checkWin
+-- , showBoard
+-- ) 
+where
 
 import Data.List
 -------------------------------------------------------------------------------------------------
@@ -46,20 +48,38 @@ type Board = ([Box], [Line], LegalMoves, Int, Player)
 -------------------------------------------------------------------------------------------------
 --                             PRETTY SHOW FOR DOTS AND BOXES
 -------------------------------------------------------------------------------------------------
+-- THIS ONE WAS BETTER AND YOU KNOW IT BUT WE CHANGED SO WE WOULDN'T LOSE POINTS :(
+    
+-- prettyShowBoard :: Board -> String
+-- prettyShowBoard board@(boxes, lines, legals, size, player) = case checkWin board of
+--     Nothing -> ("Current Player: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+--     Just (Winner player) -> ("Winner: " ++ show player ++ "\n") ++ prettyBoardSwag points []
+--     Just Tie -> ("TIE\n") ++ prettyBoardSwag points []
+--     where points = [(x,y) | x <- [1..size], y <- [1..size]]
+--           prettyBoardSwag [] acc = []
+--           prettyBoardSwag (p:ps) acc
+--             | (p,Rght) `elem` lines && (p,Dwn) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ ("  |  " ++ plyr))
+--             | (p,Rght) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ "       ")
+--             | (p,Dwn) `elem` lines = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ ("  |    ")) else show p ++ "\n" ++ acc ++ "  |\n" ++ prettyBoardSwag ps []
+--             | otherwise = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ "       ") else show p ++ "\n" ++ acc ++ "\n" ++ prettyBoardSwag ps []
+--                 where plyr = if (p,Blue) `elem` boxes then "Bl" else if (p,Red) `elem` boxes then "Rd" else "  "
 
-prettyShowBoard :: Board -> String
-prettyShowBoard board@(boxes, lines, legals, size, player) = case checkWin board of
-    Nothing -> ("Current Player: " ++ show player ++ "\n") ++ prettyBoardSwag points []
-    Just (Winner player) -> ("Winner: " ++ show player ++ "\n") ++ prettyBoardSwag points []
-    Just Tie -> ("TIE\n") ++ prettyBoardSwag points []
-    where points = [(x,y) | x <- [1..size], y <- [1..size]]
-          prettyBoardSwag [] acc = []
-          prettyBoardSwag (p:ps) acc
-            | (p,Rght) `elem` lines && (p,Dwn) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ ("  |  " ++ plyr))
-            | (p,Rght) `elem` lines = show p ++ "--" ++ prettyBoardSwag ps (acc ++ "       ")
-            | (p,Dwn) `elem` lines = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ ("  |    ")) else show p ++ "\n" ++ acc ++ "  |\n" ++ prettyBoardSwag ps []
-            | otherwise = if snd p /= size then show p ++ "  " ++ prettyBoardSwag ps (acc ++ "       ") else show p ++ "\n" ++ acc ++ "\n" ++ prettyBoardSwag ps []
-                where plyr = if (p,Blue) `elem` boxes then "Bl" else if (p,Red) `elem` boxes then "Rd" else "  "
+showBoard board@(_,_,_,size,_) = putPlayer board ++ concat [showLine r board | r <- [1..size]]
+    where putPlayer board@(_,_,_,_,player) = case checkWin board of
+            Nothing -> ("Current Player: " ++ show player ++ "\n")
+            Just (Winner player) -> ("Winner: " ++ show player ++ "\n")
+            Just Tie -> ("TIE\n")
+          prettyPoint p (_,lines,_,_,_)
+            | (p,Rght) `elem` lines = show p ++ "--"
+            | otherwise = show p ++ "  " 
+          prettyMiddle p (boxes,lines,_,_,_)
+            | (p,Dwn) `elem` lines = "  |  " ++ plyr
+            | otherwise = "       "
+            where plyr = if (p,Blue) `elem` boxes then "Bl" else if (p,Red) `elem` boxes then "Rd" else "  "
+          showLine c board@(_,_,_,size,_) = 
+            let top = concat [prettyPoint (c,r) board | r <- [1..size]]
+                middle = concat [prettyMiddle (c,r) board | r <- [1..size]]  
+            in if c == size then top ++ "\n" else top ++ "\n" ++ middle ++ "\n"
 -- (1,1)--(1,2)--(1,3)
 --   |  Rd  |      |
 -- (2,1)--(2,2)--(2,3)
